@@ -8,6 +8,7 @@
 # This can be tested locally with given that the MS_TEAMS_WEBHOOK_URL variable is set:
 # > circleci config process .circleci/config.yml > tmp/circle.yml && circleci local execute -c tmp/circle.yml -e MS_TEAMS_WEBHOOK_URL=$MS_TEAMS_WEBHOOK_URL
 version: 2.1
+orb-version: 0.0.1
 
 description: An orb for notifiying Microsoft Teams of build statuses.
 
@@ -106,7 +107,6 @@ commands:
         description: Steps that will be executed after Teams messaging dependencies are installed, but before status is reported.
         type: steps
     steps:
-      # TODO: install dependencies
       - steps: << parameters.steps >>
       - report:
           webhook_url: << parameters.webhook_url >>
