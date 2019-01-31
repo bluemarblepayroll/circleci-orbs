@@ -1,0 +1,24 @@
+version: 2.1
+
+orbs:
+  status_to_ms_teams: bluemarblepayroll/status_to_ms_teams_pure_bash@dev:0.0.1
+
+jobs:
+  test:
+    docker:
+      # Note that this is intentionally vauge as these Orbs should be portable:
+      - image: circleci/node
+    working_directory: ~/circleci-orbs
+    steps:
+      - checkout
+
+      - run: test/run
+
+      - status_to_ms_teams/report:
+          webhook_url: $MS_TEAMS_WEBHOOK_URL
+
+workflows:
+  version: 2.1
+  build:
+    jobs:
+      - test
