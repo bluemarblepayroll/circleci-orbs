@@ -4,9 +4,6 @@
 # More on the card format https://docs.microsoft.com/en-us/outlook/actionable-messages/adaptive-card
 # Message Card WYSIWYG https://messagecardplayground.azurewebsites.net/
 # Lack of at mention support: https://microsoftteams.uservoice.com/forums/555103-public/suggestions/17153099-webhook-needs-to-support-forced-notification-a-la
-
-# This can be tested locally with given that the MS_TEAMS_WEBHOOK_URL variable is set:
-# > circleci config process .circleci/config.yml > tmp/circle.yml && circleci local execute -c tmp/circle.yml -e MS_TEAMS_WEBHOOK_URL=$MS_TEAMS_WEBHOOK_URL
 version: 2.1
 orb-version: 0.0.1
 
