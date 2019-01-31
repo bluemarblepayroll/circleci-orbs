@@ -14,9 +14,6 @@ jobs:
     steps:
       - checkout
 
-      # debugging:
-      - run: env | grep ^CIRCLE | sort
-
       # Note that this is only neccessary because the above docker image has an
       # oldler version of the CLI. Once the image has been updated to version
       # 1.47 of the circleci then this can be removed.
