@@ -5,7 +5,7 @@
 # Message Card WYSIWYG https://messagecardplayground.azurewebsites.net/
 # Lack of at mention support: https://microsoftteams.uservoice.com/forums/555103-public/suggestions/17153099-webhook-needs-to-support-forced-notification-a-la
 version: 2.1
-orb-version: 0.0.1
+orb-version: 0.0.4
 
 description: An orb for notifiying Microsoft Teams of build statuses.
 
@@ -32,9 +32,16 @@ commands:
 
             SHORT_SHA1=`echo -n $CIRCLE_SHA1 | head -c 7`
 
-            # TODO: support Github.
-            COMMIT_LINK=\[$SHORT_SHA1\]\(https://bitbucket.org/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/commits/$CIRCLE_SHA1\)
-            AVATAR_URL=https://bitbucket.org/account/$CIRCLE_USERNAME/avatar
+            if [ `echo "$CIRCLE_REPOSITORY_URL" | grep "^git@github.com"` ]; then
+              COMMIT_LINK=\[$SHORT_SHA1\]\(https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/commits/$CIRCLE_SHA1\)
+              AVATAR_URL=https://github.com/${CIRCLE_USERNAME}.png
+            elif [ `echo "$CIRCLE_REPOSITORY_URL" | grep "^git@bitbucket.org"` ]; then
+              COMMIT_LINK=\[$SHORT_SHA1\]\(https://bitbucket.org/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/commits/$CIRCLE_SHA1\)
+              AVATAR_URL=https://bitbucket.org/account/$CIRCLE_USERNAME/avatar
+            else
+              >&2 echo unknown version control system: $CIRCLE_REPOSITORY_URL
+              fail
+            fi
 
             # Note that the "\<<" in the heredoc declaration is excaped from
             # CircleCI's parameters syntax.

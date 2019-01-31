@@ -16,19 +16,23 @@ Tests can be run by executing:
 test/run
 ```
 
+It is also possible to run the orbs locally via the .circle/config.yml file. This requires a Docker installation. The command to run things locally is in .circle/config.yml.
+
 ## Publishing
 
-First validate the orb:
+1. Validate the orb:
 
 ```bash
 circleci orb validate src/orbs/my_orb.yml
 ```
 
-Then publish (assumes that it has already been created):
+2. Then publish (assumes that it has already been created):
 
 ```bash
 circleci orb publish src/orbs/my_orb.yml bluemarblepayroll/my_orb@dev:0.0.1
 ```
+
+3. Finally, update the orb's version number in the actual orb and its reference in .circleci/config.yml.
 
 More info on the publishing process is [available from CircleCI](https://circleci.com/docs/2.0/creating-orbs/)
 
