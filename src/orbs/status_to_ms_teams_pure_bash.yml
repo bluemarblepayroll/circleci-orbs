@@ -5,14 +5,49 @@
 # Message Card WYSIWYG https://messagecardplayground.azurewebsites.net/
 # Lack of at mention support: https://microsoftteams.uservoice.com/forums/555103-public/suggestions/17153099-webhook-needs-to-support-forced-notification-a-la
 version: 2.1
-orb-version: 0.0.4
+orb-version: 0.0.5
 
 description: An orb for notifiying Microsoft Teams of build statuses.
 
 examples:
-  todo:
+  report-command:
+    description: Report the status of a job to MS Teams
     usage:
       version: 2.1
+
+      orbs:
+        status_to_ms_teams: bluemarblepayroll/status_to_ms_teams_pure_bash@dev:0.0.4
+
+      jobs:
+        build:
+          executor: docker
+          steps:
+            - checkout
+
+            - run: command/to/run/your/tests
+
+            - status_to_ms_teams/report:
+                webhook_url: $MS_TEAMS_WEBHOOK_URL
+  do-command:
+    description: Report the status of certain steps to MS Teams
+    usage:
+      version: 2.1
+
+      orbs:
+        status_to_ms_teams: bluemarblepayroll/status_to_ms_teams_pure_bash@dev:0.0.4
+
+      jobs:
+        build:
+          executor: docker
+          steps:
+            - run: echo "if this fails, nothing will be sent to teams"
+
+            - status_to_ms_teams/do:
+                webhook_url: $MS_TEAMS_WEBHOOK_URL
+                steps:
+                  - run: echo "if this fails then a message will be sent to teams"
+
+            - run: echo "if this fails, nothing will be sent to teams"
 
 commands:
   report:

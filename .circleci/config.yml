@@ -3,7 +3,7 @@
 version: 2.1
 
 orbs:
-  status_to_ms_teams: bluemarblepayroll/status_to_ms_teams_pure_bash@dev:0.0.4
+  status_to_ms_teams: bluemarblepayroll/status_to_ms_teams_pure_bash@dev:0.0.5
 
 jobs:
   build:
