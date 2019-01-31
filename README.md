@@ -2,6 +2,16 @@
 
 A project to house our Orb.
 
+## Development
+
+First, [install and configure the circleci command](https://circleci.com/docs/2.0/configuration-reference/).
+
+Tests can be run by executing:
+
+```bash
+test/run
+```
+
 ## Publishing
 
 First validate the orb:

@@ -1,0 +1,4 @@
+#!/bin/bash -eo pipefail
+
+# Validate all orbs:
+find src/orbs -name '*.yml' -print -exec circleci orb validate {} \;
