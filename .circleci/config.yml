@@ -9,10 +9,20 @@ jobs:
   build:
     docker:
       # Note that this is intentionally vauge as these Orbs should be portable:
-      - image: circleci/node
+      - image: circleci/node:latest
     working_directory: ~/circleci-orbs
     steps:
       - checkout
+
+      # Note that this is only neccessary because the above docker image has an
+      # oldler version of the CLI. Once the image has been updated to version
+      # 1.47 of the circleci then this can be removed.
+      - run:
+          name: Install a newer CirlceCI CLI with orb support
+          command: |
+            mkdir bin
+            curl -fLSs https://circle.ci/cli | DESTDIR=~/circleci-orbs/bin bash
+            bin/circleci version
 
       - run: test/run
 
