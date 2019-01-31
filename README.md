@@ -4,7 +4,7 @@ A project to house our Orbs.
 
 ## Our Orbs
 
-* status_to_ms_teams_pure_bash - publishes the status of a job to a Microsoft Teams channel. Microsoft provides [this integration](https://appsource.microsoft.com/en-us/product/office/WA104381588?src=Office&tab=Overview) which has not been updated to work with CircleCI version 2.
+* [status_to_ms_teams_pure_bash](https://circleci.com/orbs/registry/orb/bluemarblepayroll/status_to_ms_teams_pure_bash) - publishes the status of a job to a Microsoft Teams channel. Note that Microsoft provides [this integration](https://appsource.microsoft.com/en-us/product/office/WA104381588?src=Office&tab=Overview), *but* it has not been updated to work with CircleCI version 2.
 
 ## Development
 
