@@ -7,7 +7,7 @@
 version: 2.1
 orb-version: 0.0.5
 
-description: An orb for notifiying Microsoft Teams of build statuses.
+description: An orb for notifiying Microsoft Teams of build statuses implimented in pure Bash.
 
 examples:
   report-command:
