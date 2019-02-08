@@ -6,6 +6,7 @@ set -o xtrace
 
 # Validate all orbs:
 # The path modification is needed for CI as a newer version of circleci is
-# installed in the bin directory.
+# installed in the bin directory. This can be removed once the CircleCI command
+# is upgraded to version >= 1.47 on the build Docker image.
 export PATH=`pwd`/bin:$PATH
 find src/orbs -name '*.yml' -print -exec circleci orb validate {} \;

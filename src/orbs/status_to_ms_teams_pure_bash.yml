@@ -112,10 +112,6 @@ commands:
             )
             echo "$MS_TEAMS_MSG_TEMPLATE" > /tmp/ms_teams_message
 
-            echo begin teams message
-            cat /tmp/ms_teams_message
-            echo end teams message
-
       - run:
           name: Report Build Success
           command: |
