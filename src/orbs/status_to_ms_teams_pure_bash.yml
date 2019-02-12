@@ -1,0 +1,147 @@
+# Microsoft References:
+# Message Card example https://docs.microsoft.com/en-us/microsoftteams/platform/concepts/connectors/connectors-using
+# Another Card example https://docs.microsoft.com/en-us/outlook/actionable-messages/send-via-connectors
+# More on the card format https://docs.microsoft.com/en-us/outlook/actionable-messages/adaptive-card
+# Message Card WYSIWYG https://messagecardplayground.azurewebsites.net/
+# Lack of at mention support: https://microsoftteams.uservoice.com/forums/555103-public/suggestions/17153099-webhook-needs-to-support-forced-notification-a-la
+version: 2.1
+orb-version: 0.1.0
+
+description: An orb for notifiying Microsoft Teams of build statuses implimented in pure Bash.
+
+examples:
+  report-command:
+    description: Report the status of a job to MS Teams
+    usage:
+      version: 2.1
+
+      orbs:
+        status_to_ms_teams: bluemarblepayroll/status_to_ms_teams_pure_bash@dev:0.0.4
+
+      jobs:
+        build:
+          executor: docker
+          steps:
+            - checkout
+
+            - run: command/to/run/your/tests
+
+            - status_to_ms_teams/report:
+                webhook_url: $MS_TEAMS_WEBHOOK_URL
+  do-command:
+    description: Report the status of certain steps to MS Teams
+    usage:
+      version: 2.1
+
+      orbs:
+        status_to_ms_teams: bluemarblepayroll/status_to_ms_teams_pure_bash@dev:0.0.4
+
+      jobs:
+        build:
+          executor: docker
+          steps:
+            - run: echo "if this fails, nothing will be sent to teams"
+
+            - status_to_ms_teams/do:
+                webhook_url: $MS_TEAMS_WEBHOOK_URL
+                steps:
+                  - run: echo "if this fails then a message will be sent to teams"
+
+            - run: echo "if this fails, nothing will be sent to teams"
+
+commands:
+  report:
+    parameters:
+      webhook_url:
+        description: The MS Teams Webhook URL.
+        type: string
+    steps:
+      - run:
+          name: status_to_ms_teams_pure_bash/Initialization
+          when: always
+          command: |
+            # The cut command removes the SHA1. Also double quotes need to
+            # be escaped as the message will be used later in a JSON document.
+            git log --format=oneline -n 1 $CIRCLE_SHA1 | cut -d' ' -f2- | sed 's/"/\\"/g' \
+              > /tmp/last_git_msg
+
+            SHORT_SHA1=`echo -n $CIRCLE_SHA1 | head -c 7`
+
+            if [ `echo "$CIRCLE_REPOSITORY_URL" | grep "^git@github.com"` ]; then
+              COMMIT_LINK=\[$SHORT_SHA1\]\(https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/commits/$CIRCLE_SHA1\)
+              AVATAR_URL=https://github.com/${CIRCLE_USERNAME}.png
+            elif [ `echo "$CIRCLE_REPOSITORY_URL" | grep "^git@bitbucket.org"` ]; then
+              COMMIT_LINK=\[$SHORT_SHA1\]\(https://bitbucket.org/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/commits/$CIRCLE_SHA1\)
+              AVATAR_URL=https://bitbucket.org/account/$CIRCLE_USERNAME/avatar
+            else
+              >&2 echo unknown version control system: $CIRCLE_REPOSITORY_URL
+              fail
+            fi
+
+            # Note that the "\<<" in the heredoc declaration is excaped from
+            # CircleCI's parameters syntax.
+            MS_TEAMS_MSG_TEMPLATE=$(cat \<<END_HEREDOC
+            {
+              "@type": "MessageCard",
+              "@context": "http://schema.org/extensions",
+              "themeColor": "__theme_color__",
+              "summary": "CircleCI Build Notification",
+              "sections": [
+                {
+                  "activityTitle": "__build_status__: ${CIRCLE_USERNAME}'s [$CIRCLE_PROJECT_REPONAME $CIRCLE_JOB #${CIRCLE_BUILD_NUM}]($CIRCLE_BUILD_URL)",
+                  "activityImage": "$AVATAR_URL",
+                  "facts": [
+                    {
+                      "name": "Branch",
+                      "value": "$CIRCLE_BRANCH"
+                    },
+                    {
+                      "name": "Commit Message",
+                      "value": "`cat /tmp/last_git_msg`"
+                    },
+                    {
+                      "name": "Commit",
+                      "value": "$COMMIT_LINK"
+                    }
+                  ],
+                  "markdown": true
+                }
+              ]
+            }
+            END_HEREDOC
+            )
+            echo "$MS_TEAMS_MSG_TEMPLATE" > /tmp/ms_teams_message
+
+      - run:
+          name: Report Build Success
+          command: |
+            MSG_PATH=/tmp/ms_teams_success_message
+            sed -e 's/__build_status__/Succeses/' -e 's/__theme_color__/0076D7/' \
+                /tmp/ms_teams_message > $MSG_PATH
+            curl --fail -H "Content-Type: application/json" \
+                  --data-binary @$MSG_PATH \
+                  << parameters.webhook_url >>
+          when: on_success
+
+      - run:
+          name: Report Build Failure
+          command: |
+            MSG_PATH=/tmp/ms_teams_failure_message
+            sed -e 's/__build_status__/Failure/' -e 's/__theme_color__/e2091d/' \
+                /tmp/ms_teams_message > $MSG_PATH
+            curl --fail -H "Content-Type: application/json" \
+                  --data-binary @$MSG_PATH \
+                  << parameters.webhook_url >>
+          when: on_fail
+  do:
+    parameters:
+      webhook_url:
+        description: The MS Teams Webhook URL.
+        type: string
+      steps:
+        description: Steps that will be executed after Teams messaging dependencies are installed, but before status is reported.
+        type: steps
+    steps:
+      - steps: << parameters.steps >>
+      - report:
+          webhook_url: << parameters.webhook_url >>

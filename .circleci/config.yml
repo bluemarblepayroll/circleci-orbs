@@ -1,0 +1,36 @@
+# This can be tested locally with given that the MS_TEAMS_WEBHOOK_URL variable is set:
+# > circleci config process .circleci/config.yml > tmp/circle.yml && circleci local execute -c tmp/circle.yml -e MS_TEAMS_WEBHOOK_URL=$MS_TEAMS_WEBHOOK_URL -e CIRCLE_REPOSITORY_URL=git@github.com:bluemarblepayroll/circleci-orbs.git
+version: 2.1
+
+orbs:
+  status_to_ms_teams: bluemarblepayroll/status_to_ms_teams_pure_bash@dev:0.1.0
+
+jobs:
+  build:
+    docker:
+      # Note that this is intentionally vauge as these Orbs should be portable:
+      - image: circleci/node:latest
+    working_directory: ~/circleci-orbs
+    steps:
+      - checkout
+
+      # Note that this is only neccessary because the above docker image has an
+      # oldler version of the CLI. Once the image has been updated to version
+      # 1.47 of the circleci then this can be removed.
+      - run:
+          name: Install a newer CirlceCI CLI with orb support
+          command: |
+            mkdir bin
+            curl -fLSs https://circle.ci/cli | DESTDIR=~/circleci-orbs/bin bash
+            bin/circleci version
+
+      - run: test/run
+
+      - status_to_ms_teams/report:
+          webhook_url: $MS_TEAMS_WEBHOOK_URL
+
+workflows:
+  version: 2.1
+  build:
+    jobs:
+      - build
