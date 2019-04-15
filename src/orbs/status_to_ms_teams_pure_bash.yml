@@ -16,7 +16,7 @@ examples:
       version: 2.1
 
       orbs:
-        status_to_ms_teams: bluemarblepayroll/status_to_ms_teams_pure_bash@dev:1.0.0
+        status_to_ms_teams: bluemarblepayroll/status_to_ms_teams_pure_bash@1.0.0
 
       jobs:
         build:
@@ -34,7 +34,7 @@ examples:
       version: 2.1
 
       orbs:
-        status_to_ms_teams: bluemarblepayroll/status_to_ms_teams_pure_bash@dev:1.0.0
+        status_to_ms_teams: bluemarblepayroll/status_to_ms_teams_pure_bash@1.0.0
 
       jobs:
         build:
