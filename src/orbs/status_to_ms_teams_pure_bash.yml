@@ -5,7 +5,7 @@
 # Message Card WYSIWYG https://messagecardplayground.azurewebsites.net/
 # Lack of at mention support: https://microsoftteams.uservoice.com/forums/555103-public/suggestions/17153099-webhook-needs-to-support-forced-notification-a-la
 version: 2.1
-orb-version: 1.0.0
+orb-version: 1.0.1
 
 description: An orb for notifiying Microsoft Teams of build statuses implemented in pure Bash.
 
@@ -16,7 +16,7 @@ examples:
       version: 2.1
 
       orbs:
-        status_to_ms_teams: bluemarblepayroll/status_to_ms_teams_pure_bash@1.0.0
+        status_to_ms_teams: bluemarblepayroll/status_to_ms_teams_pure_bash@1.0.1
 
       jobs:
         build:
@@ -34,7 +34,7 @@ examples:
       version: 2.1
 
       orbs:
-        status_to_ms_teams: bluemarblepayroll/status_to_ms_teams_pure_bash@1.0.0
+        status_to_ms_teams: bluemarblepayroll/status_to_ms_teams_pure_bash@1.0.1
 
       jobs:
         build:
